@@ -132,7 +132,7 @@ class EmailProcessor:
                     self.gmail_service.perform_actions(email.id, rule["actions"])
 
 
-@app.route("/process-emails", methods=["POST"])
+@app.route("/process_emails", methods=["POST"])
 def process_emails_endpoint():
     try:
         payload = request.json
