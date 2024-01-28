@@ -1,12 +1,17 @@
+import configparser
 import re
 import sys
 from datetime import datetime, timedelta
-from typing import Any, Type
+from typing import Any, Type, Union
 
 from flask import Flask, request, jsonify
 
 from database import DatabaseService, Email
 from read_emails import authenticate_gmail
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+default_config = config["DEFAULT"]
 
 app = Flask(__name__)
 
@@ -32,7 +37,7 @@ class GmailService:
                 "removeLabelIds": ["INBOX"]
             },
             "moveMessage": {
-                "addLabelIds": [action.get("folderId", "")],
+                "addLabelIds": [action.get("labelId", "")],
                 "removeLabelIds": ["INBOX"]
             }
         }
@@ -64,6 +69,37 @@ class EmailProcessor:
                  gmail_service: Type[GmailService]) -> None:
         self.db_service = db_service
         self.gmail_service = gmail_service
+
+    @staticmethod
+    def validate_payload(payload: dict[str, Any]) -> Union[str, None]:
+        if "rules" not in payload:
+            return "Invalid payload: Missing 'rules' key"
+
+        for rule in payload["rules"]:
+            if "overallPredicate" not in rule or not isinstance(rule["overallPredicate"], str):
+                return "Invalid rule: Missing or invalid 'overallPredicate'"
+
+            if rule['overallPredicate'].lower() not in ["all", "any"]:
+                return "Invalid rule: 'overallPredicate' must be 'All' or 'Any'"
+
+            if "conditions" not in rule or not isinstance(rule["conditions"], list):
+                return "Invalid rule: Missing or invalid 'conditions'"
+
+            for condition in rule["conditions"]:
+                if "field" not in condition or "predicate" not in condition or "value" not in condition:
+                    return "Invalid condition: Missing 'field', 'predicate', or 'value'"
+
+            if "actions" not in rule or not isinstance(rule["actions"], list):
+                return "Invalid rule: Missing or invalid 'actions'"
+
+            for action in rule['actions']:
+                if "type" not in action:
+                    return "Invalid action: Missing 'type'"
+
+                if action['type'] in ['moveMessage', 'addLabel'] and "labelId" not in action:
+                    return f"Invalid action: Missing 'labelId' for {action['type']} action"
+
+        return None
 
     def check_conditions(self,
                          email: Type[Email],
@@ -136,9 +172,15 @@ class EmailProcessor:
 def process_emails_endpoint():
     try:
         payload = request.json
-        if "rules" not in payload:
+        if not payload:
             return jsonify({
-                "error": "Invalid payload"
+                "error": "Empty payload"
+            }), 400
+
+        validation_error = EmailProcessor.validate_payload(payload)
+        if validation_error:
+            return jsonify({
+                "error": validation_error
             }), 400
 
         db_service = DatabaseService()
@@ -151,12 +193,14 @@ def process_emails_endpoint():
         })
 
     except Exception as e:
-        print(f"Error - {str(e)}")
+        return jsonify({
+            "error": str(e)
+        }), 400
 
 
 def main():
     try:
-        app.run(debug=True, port=8000)
+        app.run(host=default_config["HOST"], port=int(default_config["PORT"]), debug=False, threaded=True)
     except Exception as e:
         print(f"Error - {str(e)}")
         sys.exit(1)
