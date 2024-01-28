@@ -1,0 +1,9 @@
+.venv
+client_secret.json
+token.pickle
+config.ini
+__pycache__
+.idea
+.DS_Store
+implementation.txt
+

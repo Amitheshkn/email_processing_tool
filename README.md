@@ -14,24 +14,24 @@ This project is a Python based Automation tool that provides capabilities of per
 2) Install the dependencies from requirements.txt file
     ```bash
     pip install requirements.txt
-    ``` 
-4) API Configuration:   
+    ```
+3) API Configuration:   
    - Enable the Gmail API in the Google Developers Console.  
    - Download the client configuration and save it as credentials.json in the project directory.  
   
-5) Set up a config.ini file and store the path to the client_secret.json and also fill the Database credentials. Refer code to know the actual field names and fill them accordingly  
+4) Set up a config.ini file and store the path to the client_secret.json and also fill the Database credentials. Refer code to know the actual field names and fill them accordingly  
   
   
 # Usage
   
 1) Run the read_emails.py file  
-   - Initially there will be a call for gmail authentication, which should be done via default browser. Post verfication - token.pickle file is created which will be used for further access to utilize Gmail APIs.  
+   - Initially there will be a call for gmail authentication, which should be done via default browser. Post verification - token.pickle file is created which will be used for further access to utilize Gmail APIs.  
      ```bash
      python3 read_emails.py
      ```
    - Emails are now stored to the table mentioned in the Database.  
 2) Run the process_emails.py    
-   - This file runs a local Flask service and we can utlilize the "{ip}/process_emails" - endpoint and performs actions based on the payload.    
+   - This file runs a local Flask service, and we can utlilize the "{ip}/process_emails" - endpoint and performs actions based on the payload.    
      ```bash
      python3 process_emails.py
      ```
