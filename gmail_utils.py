@@ -11,28 +11,28 @@ config.read('config.ini')
 
 google_api_config = config["GoogleAPI"]
 
-CLIENT_SECRET_FILE = google_api_config['CLIENT_SECRET_FILE']
+CLIENT_SECRET_FILE_PATH = google_api_config['CLIENT_SECRET_FILE']
 API_NAME = google_api_config['API_NAME']
 API_VERSION = google_api_config['API_VERSION']
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify']
 
 
 def authenticate_gmail() -> Resource:
-    creds = None
+    credentials = None
 
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
+            credentials = pickle.load(token)
 
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+    if not credentials or not credentials.valid:
+        if credentials and credentials.refresh_token and credentials.expired:
+            credentials.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE_PATH, SCOPES)
+            credentials = flow.run_local_server(port=0)
 
         with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
+            pickle.dump(credentials, token)
 
-    service = build(API_NAME, API_VERSION, credentials=creds)
+    service = build(API_NAME, API_VERSION, credentials=credentials)
     return service

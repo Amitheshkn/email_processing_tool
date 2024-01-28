@@ -6,4 +6,5 @@ __pycache__
 .idea
 .DS_Store
 implementation.txt
+unit_test_read_emails.py
 

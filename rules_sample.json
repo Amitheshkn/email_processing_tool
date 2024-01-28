@@ -1,101 +1,101 @@
 {
-  "rules": [
-    {
-      "overallPredicate": "All",
-      "conditions": [
+    "rules": [
         {
-          "field": "from_address",
-          "predicate": "contains",
-          "value": "example@example.com"
+            "overallPredicate": "All",
+            "conditions": [
+                {
+                    "field": "from_address",
+                    "predicate": "contains",
+                    "value": "example@example.com"
+                },
+                {
+                    "field": "subject",
+                    "predicate": "does not contain",
+                    "value": "spam"
+                }
+            ],
+            "actions": [
+                {
+                    "type": "markAsRead"
+                },
+                {
+                    "type": "moveMessage",
+                    "folderId": "INBOX"
+                },
+                {
+                    "type": "addLabel",
+                    "labelId": "IMPORTANT"
+                }
+            ]
         },
         {
-          "field": "subject",
-          "predicate": "does not contain",
-          "value": "spam"
-        }
-      ],
-      "actions": [
-        {
-          "type": "markAsRead"
+            "overallPredicate": "Any",
+            "conditions": [
+                {
+                    "field": "subject",
+                    "predicate": "equals",
+                    "value": "Important Notice"
+                }
+            ],
+            "actions": [
+                {
+                    "type": "markAsUnread"
+                },
+                {
+                    "type": "addStar"
+                }
+            ]
         },
         {
-          "type": "moveMessage",
-          "folderId": "INBOX"
+            "overallPredicate": "Any",
+            "conditions": [
+                {
+                    "field": "date_received",
+                    "predicate": "less than",
+                    "value": "7 days"
+                }
+            ],
+            "actions": [
+                {
+                    "type": "addLabel",
+                    "labelId": "STARRED"
+                }
+            ]
         },
         {
-          "type": "addLabel",
-          "labelId": "IMPORTANT"
+            "rules": [
+                {
+                    "overallPredicate": "Any",
+                    "conditions": [
+                        {
+                            "field": "date_received",
+                            "predicate": "greater than",
+                            "value": "1 months"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "archive"
+                        }
+                    ]
+                },
+                {
+                    "overallPredicate": "Any",
+                    "conditions": [
+                        {
+                            "field": "date_received",
+                            "predicate": "greater than",
+                            "value": "1 months"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "addLabel",
+                            "labelId": "OLDER"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    },
-    {
-      "overallPredicate": "Any",
-      "conditions": [
-        {
-          "field": "subject",
-          "predicate": "equals",
-          "value": "Important Notice"
-        }
-      ],
-      "actions": [
-        {
-          "type": "markAsUnread"
-        },
-        {
-          "type": "addStar"
-        }
-      ]
-    },
-    {
-      "overallPredicate": "Any",
-      "conditions": [
-        {
-          "field": "date_received",
-          "predicate": "less than",
-          "value": "7 days"
-        }
-      ],
-      "actions": [
-        {
-          "type": "archive"
-        }
-      ]
-    },
-    {
-      "rules": [
-        {
-          "overallPredicate": "Any",
-          "conditions": [
-            {
-              "field": "date_received",
-              "predicate": "greater than",
-              "value": "1 months"
-            }
-          ],
-          "actions": [
-            {
-              "type": "addLabel",
-              "labelId": "STARRED"
-            }
-          ]
-        },
-        {
-          "overallPredicate": "Any",
-          "conditions": [
-            {
-              "field": "date_received",
-              "predicate": "greater than",
-              "value": "1 months"
-            }
-          ],
-          "actions": [
-            {
-              "type": "addLabel",
-              "labelId": "OLDER"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+    ]
 }
