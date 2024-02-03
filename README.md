@@ -13,7 +13,7 @@ This project is a Python based Automation tool that provides capabilities of per
 1) Clone the repository.  
 2) Install the dependencies from requirements.txt file
     ```bash
-    pip install requirements.txt
+    pip install -r requirements.txt
     ```
 3) API Configuration:   
    - Enable the Gmail API in the Google Developers Console.  
