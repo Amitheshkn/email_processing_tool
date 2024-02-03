@@ -12,7 +12,7 @@ def get_all_labels(service: Resource) -> None:
     else:
         print("Labels:")
         for label in labels:
-            print(f"{label["name"]} (ID: {label["id"]})")
+            print(f"{label['name']} (ID: {label['id']})")
 
 
 if __name__ == "__main__":
