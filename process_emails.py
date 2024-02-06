@@ -9,7 +9,7 @@ from database import DatabaseService, Email
 from gmail_utils import authenticate_gmail
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read("config.ini")
 default_config = config["DEFAULT"]
 
 
@@ -76,7 +76,7 @@ class EmailProcessor:
             if "overallPredicate" not in rule or not isinstance(rule["overallPredicate"], str):
                 return "Invalid rule: Missing or invalid 'overallPredicate'"
 
-            if rule['overallPredicate'].lower() not in ["all", "any"]:
+            if rule["overallPredicate"].lower() not in ["all", "any"]:
                 return "Invalid rule: 'overallPredicate' must be 'All' or 'Any'"
 
             if "conditions" not in rule or not isinstance(rule["conditions"], list):
@@ -89,11 +89,11 @@ class EmailProcessor:
             if "actions" not in rule or not isinstance(rule["actions"], list):
                 return "Invalid rule: Missing or invalid 'actions'"
 
-            for action in rule['actions']:
+            for action in rule["actions"]:
                 if "type" not in action:
                     return "Invalid action: Missing 'type'"
 
-                if action['type'] in ['moveMessage', 'addLabel'] and "labelId" not in action:
+                if action["type"] in ["moveMessage", "addLabel"] and "labelId" not in action:
                     return f"Invalid action: Missing 'labelId' for {action['type']} action"
 
         return None
