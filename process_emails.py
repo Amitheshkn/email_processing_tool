@@ -1,19 +1,16 @@
 import configparser
+import json
 import re
 import sys
 from datetime import datetime, timedelta
 from typing import Any, Type, Union
 
-from flask import Flask, request, jsonify
-
 from database import DatabaseService, Email
-from read_emails import authenticate_gmail
+from gmail_utils import authenticate_gmail
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 default_config = config["DEFAULT"]
-
-app = Flask(__name__)
 
 
 class GmailService:
@@ -66,7 +63,7 @@ class GmailService:
 class EmailProcessor:
     def __init__(self,
                  db_service: DatabaseService,
-                 gmail_service: Type[GmailService]) -> None:
+                 gmail_service: GmailService) -> None:
         self.db_service = db_service
         self.gmail_service = gmail_service
 
@@ -168,39 +165,29 @@ class EmailProcessor:
                     self.gmail_service.perform_actions(email.id, rule["actions"])
 
 
-@app.route("/process_emails", methods=["POST"])
-def process_emails_endpoint():
-    try:
-        payload = request.json
-        if not payload:
-            return jsonify({
-                "error": "Empty payload"
-            }), 400
-
-        validation_error = EmailProcessor.validate_payload(payload)
-        if validation_error:
-            return jsonify({
-                "error": validation_error
-            }), 400
-
-        db_service = DatabaseService()
-        gmail_service = GmailService
-        email_processor = EmailProcessor(db_service, gmail_service)
-        email_processor.process_emails(payload["rules"])
-
-        return jsonify({
-            "message": "Email processing has been completed"
-        })
-
-    except Exception as e:
-        return jsonify({
-            "error": str(e)
-        }), 400
+def fetch_json_content() -> dict:
+    with open("rules.json", "r") as file:
+        content = json.load(file)
+        return content
 
 
 def main():
     try:
-        app.run(host=default_config["HOST"], port=int(default_config["PORT"]), debug=False, threaded=True)
+        db_service = DatabaseService()
+        gmail_service = GmailService()
+        email_processor = EmailProcessor(db_service, gmail_service)
+
+        json_content = fetch_json_content()
+        if not json_content:
+            raise Exception("JSON content not found")
+
+        validation_error = EmailProcessor.validate_payload(json_content)
+        if validation_error:
+            raise Exception(f"JSON validation failed - {validation_error}")
+
+        email_processor.process_emails(json_content["rules"])
+        print("Email processing has been completed")
+
     except Exception as e:
         print(f"Error - {str(e)}")
         sys.exit(1)

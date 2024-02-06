@@ -9,6 +9,8 @@ This project is a Python based Automation tool that provides capabilities of per
 - Process Emails - Process the stored Emails from DB based on set actions and rules provided by user through REST API.  
   
 # How to use  
+
+#### Python - 3.12 version is used
   
 1) Clone the repository.  
 2) Install the dependencies from requirements.txt file

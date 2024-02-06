@@ -35,6 +35,11 @@
                     "field": "subject",
                     "predicate": "equals",
                     "value": "Important Notice"
+                },
+                {
+                    "field": "message",
+                    "predicate": "does not contain",
+                    "value": "food services"
                 }
             ],
             "actions": [
@@ -52,7 +57,7 @@
                 {
                     "field": "date_received",
                     "predicate": "less than",
-                    "value": "7 days"
+                    "value": "7 days old"
                 }
             ],
             "actions": [
@@ -63,37 +68,33 @@
             ]
         },
         {
-            "rules": [
+            "overallPredicate": "Any",
+            "conditions": [
                 {
-                    "overallPredicate": "Any",
-                    "conditions": [
-                        {
-                            "field": "date_received",
-                            "predicate": "greater than",
-                            "value": "1 months"
-                        }
-                    ],
-                    "actions": [
-                        {
-                            "type": "archive"
-                        }
-                    ]
-                },
+                    "field": "date_received",
+                    "predicate": "greater than",
+                    "value": "2 months"
+                }
+            ],
+            "actions": [
                 {
-                    "overallPredicate": "Any",
-                    "conditions": [
-                        {
-                            "field": "date_received",
-                            "predicate": "greater than",
-                            "value": "1 months"
-                        }
-                    ],
-                    "actions": [
-                        {
-                            "type": "addLabel",
-                            "labelId": "OLDER"
-                        }
-                    ]
+                    "type": "archive"
+                }
+            ]
+        },
+        {
+            "overallPredicate": "All",
+            "conditions": [
+                {
+                    "field": "date_received",
+                    "predicate": "greater than",
+                    "value": "4 months"
+                }
+            ],
+            "actions": [
+                {
+                    "type": "addLabel",
+                    "labelId": "OLDER"
                 }
             ]
         }
